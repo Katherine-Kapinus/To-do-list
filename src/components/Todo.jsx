@@ -6,7 +6,8 @@ const Todo = () => {
 // useState([]) створює порожній масив станів з початковим значенням []
 // todoList — змінна, що містить поточний масив завдань
 // setTodoList — функція, яка оновлює цей масив (і викликає повторний рендер)
-const [todoList, setTodoList] = useState([]);
+    console.log(todoList);
+const [todoList, setTodoList] = useState(localStorage.getItem("todos")? JSON.parse(localStorage.getItem("todos")) : []);
 
 // присвоюємо змінній inputRef хук useRef()
 // цей хук створює обєкт { current: undefined }, який React використовує для збереження посилання на DOM-елемент
@@ -58,7 +59,7 @@ const toggle = (id) => {
 }
 
 useEffect(() => {
-    console.log(todoList);
+    localStorage.setItem("todos", JSON.stringify(todoList))
 },[todoList])
 
 
