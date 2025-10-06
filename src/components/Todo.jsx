@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import todo_icon from '../assets/todo_icon.png'  // шляхи відносні до цього файлу
 import TodoItems from './TodoItems'
 
@@ -17,8 +17,6 @@ const add = () => {
     // .current — це сам DOM-елемент, .value — його текст
     // trim() прибирає зайві пробіли на початку і в кінці рядка
     const inputText = inputRef.current.value.trim();
-    console.log(inputText);
-
     if (inputText === "") {
         return null;
     }
@@ -33,16 +31,36 @@ const add = () => {
         text: inputText,
         isComplete: false,
     }
-    console.log(newTodo);
 
     // отрмуємо попрередній масив і створюємо новий з додаванням нового обєкту
     setTodoList((prev) => [...prev, newTodo]);
-    console.log(todoList);
 
     // після додаваня задачі вручніі очищуємо поле вводу
     // вручну бо useRef не викликає рендер
     inputRef.current.value = "";
 }
+
+const deleteTodo = (id) => {
+    setTodoList((prvTodos) => {
+        return prvTodos.filter((todo) => todo.id !== id)
+    })
+}
+
+const toggle = (id) => {
+    setTodoList((prevTodos) => {
+        return prevTodos.map((todo) => {
+            if(todo.id === id){
+                return {...todo, isComplete: !todo.isComplete}
+            }
+            return todo;
+        })
+    })
+}
+
+useEffect(() => {
+    console.log(todoList);
+},[todoList])
+
 
     return (
         <div className='bg-white place-self-center w-11/12 max-w-md flex-col p-7 min-h-[550px] rounded-xl '>
@@ -59,7 +77,14 @@ const add = () => {
             </div>
             {/* --------todo list ---------- */}
             {todoList.map((item, index) => {
-                return <TodoItems key={index} text={item.text} />
+                return <TodoItems 
+                key={index} 
+                text={item.text} 
+                id={item.id} 
+                isComplete={item.isComplete} 
+                deleteTodo={deleteTodo}
+                toggle={toggle}
+                />
             })}
 
         </div>
