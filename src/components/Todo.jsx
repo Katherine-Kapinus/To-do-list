@@ -1,8 +1,49 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import todo_icon from '../assets/todo_icon.png'  // шляхи відносні до цього файлу
 import TodoItems from './TodoItems'
 
 const Todo = () => {
+// useState([]) створює порожній масив станів з початковим значенням []
+// todoList — змінна, що містить поточний масив завдань
+// setTodoList — функція, яка оновлює цей масив (і викликає повторний рендер)
+const [todoList, setTodoList] = useState([]);
+
+// присвоюємо змінній inputRef хук useRef()
+// цей хук створює обєкт { current: undefined }, який React використовує для збереження посилання на DOM-елемент
+const inputRef = useRef()
+
+const add = () => {
+    // створюємо нову змінну, що зчитує поточне значення поля введення через inputRef
+    // .current — це сам DOM-елемент, .value — його текст
+    // trim() прибирає зайві пробіли на початку і в кінці рядка
+    const inputText = inputRef.current.value.trim();
+    console.log(inputText);
+
+    if (inputText === "") {
+        return null;
+    }
+
+
+    // створюємо один новий обкєт у списку
+    // обєект буде мати айді з чатсом у мілісекндах
+    // текст з інпуту
+    // та прапорець виконаності
+    const newTodo = {
+        id: Date.now(),
+        text: inputText,
+        isComplete: false,
+    }
+    console.log(newTodo);
+
+    // отрмуємо попрередній масив і створюємо новий з додаванням нового обєкту
+    setTodoList((prev) => [...prev, newTodo]);
+    console.log(todoList);
+
+    // після додаваня задачі вручніі очищуємо поле вводу
+    // вручну бо useRef не викликає рендер
+    inputRef.current.value = "";
+}
+
     return (
         <div className='bg-white place-self-center w-11/12 max-w-md flex-col p-7 min-h-[550px] rounded-xl '>
 
@@ -13,13 +54,14 @@ const Todo = () => {
             </div>
             {/* ---------input box--------- */}
             <div className="flex items-center my-7 rounded-full bg-gray-300 gap-2" >
-                <input className='border-0 outline-none flex-1 h-14 pl-6 pr-2 placeholder:text-slate-600' type="text" placeholder='Add your task' />
-                <button className='bg-orange-500 text-lg font-medium cursor-pointer text-white rounded-full h-14 w-32'>ADD +</button>
+                <input ref={inputRef} className='border-0 outline-none flex-1 h-14 pl-6 pr-2 placeholder:text-slate-600' type="text" placeholder='Add your task' />
+                <button onClick={add} className='bg-orange-500 text-lg font-medium cursor-pointer text-white rounded-full h-14 w-32'>ADD +</button>
             </div>
             {/* --------todo list ---------- */}
-            <TodoItems text="learn coding" />
-            <TodoItems text="Do shoping" />
-            <TodoItems text="Go sleep" />
+            {todoList.map((item, index) => {
+                return <TodoItems key={index} text={item.text} />
+            })}
+
         </div>
     )
 }
